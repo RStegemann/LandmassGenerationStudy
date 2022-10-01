@@ -11,7 +11,7 @@ public class MapGenerator : MonoBehaviour
         Mesh
     }
 
-    const int mapChunkSize = 241;
+    public const int mapChunkSize = 241;
 
     [Header("General")]
     public DrawMode drawMode = DrawMode.NoiseMap;
