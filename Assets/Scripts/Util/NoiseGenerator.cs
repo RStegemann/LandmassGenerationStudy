@@ -91,4 +91,22 @@ public static class NoiseGenerator
 
         return noiseMap;
     }
+
+    public static float[,] GenerateFalloffMap(int size, AnimationCurve curve)
+    {
+        float[,] map = new float[size, size];
+
+        for(int row = 0; row < size; row++)
+        {
+            for(int col = 0;  col < size; col++)
+            {
+                float x = col / (float)size * 2 - 1;
+                float y = row / (float)size * 2 - 1;
+                float value = Mathf.Max(Mathf.Abs(x), Mathf.Abs(y));
+                map[row, col] = curve.Evaluate(value);
+            }
+        }
+
+        return map;
+    }
 }
