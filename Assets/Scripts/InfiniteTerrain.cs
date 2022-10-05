@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InfiniteTerrain : MonoBehaviour
 {
-    const float scale = 5f;
     public LODInfo[] detailLevels;
     public static float maxViewDistance = 600;
 
@@ -30,7 +29,7 @@ public class InfiniteTerrain : MonoBehaviour
 
     private void Update()
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z) /scale;
+        viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / mapGenerator.terrainSettings.uniformScale;
         UpdateVisibleChunks();
     }
 
@@ -83,7 +82,7 @@ public class InfiniteTerrain : MonoBehaviour
         {
             pos = coord * size;
             bounds = new Bounds(pos, Vector2.one * size);
-            Vector3 posV3 = new Vector3(pos.x, 0, pos.y) * scale;
+            Vector3 posV3 = new Vector3(pos.x, 0, pos.y) * mapGenerator.terrainSettings.uniformScale;
             this.detailLevels = detailLevels;
 
             meshObject = new GameObject("Terrain Chunk");
@@ -92,7 +91,7 @@ public class InfiniteTerrain : MonoBehaviour
 
             meshObject.transform.position = posV3;
             meshObject.transform.SetParent(parent);
-            meshObject.transform.localScale = new Vector3(scale, scale, scale);
+            meshObject.transform.localScale = new Vector3(mapGenerator.terrainSettings.uniformScale, mapGenerator.terrainSettings.uniformScale, mapGenerator.terrainSettings.uniformScale);
             meshRenderer.material = material;
             SetVisible(false);
 

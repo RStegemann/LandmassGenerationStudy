@@ -11,39 +11,47 @@ public class MapGenerator : MonoBehaviour
     {
         NoiseMap,
         ColourMap,
-        Mesh
+        Mesh,
+        FalloffMap
     }
 
-    public const int mapChunkSize = 241;
+    public const int mapChunkSize = 239;
 
     [Header("General")]
     public DrawMode drawMode = DrawMode.NoiseMap;
-    public NoiseGenerator.NormalizeMode normalizeMode;
-    public float noiseScale;
-    public int octaves;
-    [Range(0f, 1f)]
-    public float persistence;
-    public float lacunarity;
-    public int seed;
-    public Vector2 offset;
-
-    [Header("Colouring")]
-    public TerrainType[] regions;
+    [Expandable]
+    public TerrainSettings terrainSettings;
+    [Expandable]
+    public NoiseSettings noiseSettings;
 
     [Header("Mesh")]
     [Range(0, 6)]
     public int editorPreviewLOD;
-    public float meshHeightMultiplier;
-    public AnimationCurve meshHeightCurve;
+
+    [Header("Colouring")]
+    public TerrainType[] regions;
 
     public bool autoUpdate;
+    private float[,] falloffMap;
 
     Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
     Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
     private MapData GenerateMapData(Vector2 center)
     {
-        float[,] noiseMap = NoiseGenerator.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistence, lacunarity, center + offset, normalizeMode);
+        float[,] noiseMap = NoiseGenerator.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, 
+            noiseSettings.seed, noiseSettings.noiseScale, noiseSettings.octaves, 
+            noiseSettings.persistence, noiseSettings.lacunarity, center + noiseSettings.offset, noiseSettings.normalizeMode);
+        if (terrainSettings.useFalloff)
+        {
+            for(int y = 0; y < mapChunkSize + 2; y++)
+            {
+                for(int x = 0; x < mapChunkSize + 2; x++)
+                {
+                    noiseMap[x, y] = Mathf.Clamp01(noiseMap[x, y] - falloffMap[x, y]);
+                }
+            }
+        }
         Color[] colourMap = CreateColourMap(noiseMap);
         return new MapData(noiseMap, colourMap);
     }
@@ -79,7 +87,7 @@ public class MapGenerator : MonoBehaviour
 
     private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
     {
-        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, lod);
+        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, terrainSettings.meshHeightMultiplier, terrainSettings.meshHeightCurve, lod);
         lock (meshThreadInfoQueue)
         {
             meshThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -126,8 +134,11 @@ public class MapGenerator : MonoBehaviour
                 display.DrawTexture(TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
                 break;
             case DrawMode.Mesh:
-                display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, editorPreviewLOD), 
+                display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, terrainSettings.meshHeightMultiplier, terrainSettings.meshHeightCurve, editorPreviewLOD), 
                     TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
+                break;
+            case DrawMode.FalloffMap:
+                display.DrawTexture(TextureGenerator.TextureFromHeightMap(NoiseGenerator.GenerateFalloffMap(mapChunkSize, terrainSettings.falloffCurve)));
                 break;
         }
     }
@@ -158,14 +169,7 @@ public class MapGenerator : MonoBehaviour
 
     private void OnValidate()
     {
-        if(lacunarity < 1)
-        {
-            lacunarity = 1;
-        }
-        if(octaves < 1)
-        {
-            octaves = 1;
-        }
+        falloffMap = NoiseGenerator.GenerateFalloffMap(mapChunkSize + 2, terrainSettings.falloffCurve);
     }
 
     private struct MapThreadInfo<T>
