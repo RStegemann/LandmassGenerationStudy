@@ -2,58 +2,41 @@ Shader "Unlit/Terrain"
 {
     Properties
     {
-        float minHeight;
-        float maxHeight;
+        [Header(Surface Options)]
+        [MainColor] _ColorTint("Tint", Color) = (1, 1, 1, 1)
+        [MainTexture] _ColorMap("Color", 2D) = "white" {}
+        _Smoothness("Smoothness", Float) = 0
     }
-    SubShader
-    {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
-
+    
+    SubShader{
+        Tags{"RenderPipeline" = "UniversalPipeline"}
         Pass
         {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
+            Name "ForwardLit"
+            Tags{"LightMode" = "UniversalForward"}
+            
+            HLSLPROGRAM
+            #define _SPECULAR_COLOR
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _SHADOWS_SOFT
+            
+            #pragma vertex vertex
+            #pragma fragment fragment
 
-            #include "UnityCG.cginc"
-
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
-            };
-
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
-                return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
-            }
-            ENDCG
+            #include "TerrainLitForwardPass.hlsl"
+            ENDHLSL
+        }
+        
+        Pass
+        {
+            Name "ShadowCaster"
+            Tags{"LightMode" = "ShadowCaster"}
+            
+            HLSLPROGRAM
+            #pragma vertex vertex
+            #pragma fragment fragment
+            #include "TerrainLitShadowCasterPass.hlsl"
+            ENDHLSL            
         }
     }
 }
