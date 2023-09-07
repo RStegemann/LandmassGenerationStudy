@@ -21,7 +21,7 @@ public class InfiniteTerrain : MonoBehaviour
     private void Start()
     {
         mapGenerator = FindObjectOfType<MapGenerator>();
-        chunkSize = MapGenerator.mapChunkSize - 1;
+        chunkSize = MapGenerator.MapChunkSize() - 1;
         maxViewDistance = detailLevels[detailLevels.Length-1].visibleDistanceThreshold;
         chunksInDistance = Mathf.RoundToInt(maxViewDistance / chunkSize);
         UpdateVisibleChunks();
@@ -70,9 +70,11 @@ public class InfiniteTerrain : MonoBehaviour
 
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
+        MeshCollider collider;
 
         LODInfo[] detailLevels;
         LODMesh[] lodMeshes;
+        LODMesh collisionLodMesh;
 
         MapData mapData;
         bool mapDataReceived;
@@ -92,7 +94,9 @@ public class InfiniteTerrain : MonoBehaviour
             meshObject.transform.position = posV3;
             meshObject.transform.SetParent(parent);
             meshObject.transform.localScale = new Vector3(mapGenerator.terrainSettings.uniformScale, mapGenerator.terrainSettings.uniformScale, mapGenerator.terrainSettings.uniformScale);
+            collider = meshObject.AddComponent<MeshCollider>();
             meshRenderer.material = material;
+
             SetVisible(false);
 
             lodMeshes = new LODMesh[detailLevels.Length];
@@ -100,6 +104,10 @@ public class InfiniteTerrain : MonoBehaviour
                 for(int i = 0; i < detailLevels.Length; i++)
                 {
                     lodMeshes[i] = new LODMesh(detailLevels[i].lod, UpdateTerrainChunk);
+                    if (detailLevels[i].useForCollider)
+                    {
+                        collisionLodMesh = lodMeshes[i];
+                    }
                 }
             }
             mapGenerator.RequestMapData(pos, OnMapDataReceived);
@@ -109,7 +117,7 @@ public class InfiniteTerrain : MonoBehaviour
         {
             this.mapData = mapData;
             mapDataReceived = true;
-            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, MapGenerator.mapChunkSize, MapGenerator.mapChunkSize);
+            Texture2D texture = TextureGenerator.TextureFromColorMap(mapData.colorMap, MapGenerator.MapChunkSize(), MapGenerator.MapChunkSize());
             meshRenderer.material.mainTexture = texture;
             UpdateTerrainChunk();
         }
@@ -147,6 +155,19 @@ public class InfiniteTerrain : MonoBehaviour
                         else if (!lodMesh.hasRequested)
                         {
                             lodMesh.RequestMesh(mapData);
+                        }
+                        if(lodIndex == 0)
+                        {
+                            if (collisionLodMesh.hasMesh){
+                                collider.sharedMesh = collisionLodMesh.mesh;
+                            }else if (!collisionLodMesh.hasRequested)
+                            {
+                                collisionLodMesh.RequestMesh(mapData);
+                            }
+                        }
+                        else
+                        {
+                            collider.sharedMesh = null;
                         }
                     }
                     chunksVisibleLastUpdate.Add(this);
@@ -199,5 +220,6 @@ public class InfiniteTerrain : MonoBehaviour
     {
         public int lod;
         public float visibleDistanceThreshold;
+        public bool useForCollider;
     }
 }
