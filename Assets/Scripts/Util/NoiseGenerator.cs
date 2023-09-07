@@ -106,8 +106,8 @@ public static class NoiseGenerator
             scale = 0.0001f;
         }
 
-        float halfWidth = mapWidth / 2;
-        float halfHeight = mapHeight / 2;
+        float halfWidth = mapWidth / 2f;
+        float halfHeight = mapHeight / 2f;
 
         for (int y = 0; y < mapHeight; y++)
         {

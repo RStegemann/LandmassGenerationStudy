@@ -11,12 +11,13 @@ public class UpdatableScriptable : ScriptableObject
     {
         if (autoUpdate)
         {
-            NotifyOfUpdate();
+            UnityEditor.EditorApplication.update += NotifyOfUpdate;
         }
     }
 
     public void NotifyOfUpdate()
     {
+        UnityEditor.EditorApplication.update -= NotifyOfUpdate;
         if(OnValuesUpdated != null)
         {
             OnValuesUpdated?.Invoke();

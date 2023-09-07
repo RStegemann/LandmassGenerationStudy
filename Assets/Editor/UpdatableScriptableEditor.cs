@@ -13,6 +13,7 @@ public class UpdatableScriptableEditor : Editor
         if (GUILayout.Button("Update"))
         {
             obj.NotifyOfUpdate();
+            EditorUtility.SetDirty(target);
         }
     }
 }
