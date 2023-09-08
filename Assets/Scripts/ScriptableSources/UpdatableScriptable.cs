@@ -7,6 +7,7 @@ public class UpdatableScriptable : ScriptableObject
     public System.Action OnValuesUpdated;
     public bool autoUpdate;
 
+    #if UNITY_EDITOR
     public virtual void OnValidate()
     {
         if (autoUpdate)
@@ -23,4 +24,5 @@ public class UpdatableScriptable : ScriptableObject
             OnValuesUpdated?.Invoke();
         }
     }
+    #endif
 }
