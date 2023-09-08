@@ -15,6 +15,7 @@ public class NoiseSettings : UpdatableScriptable
     public int seed;
     public Vector2 offset;
 
+    #if UNITY_EDITOR
     public override void OnValidate()
     {
         base.OnValidate();
@@ -31,4 +32,5 @@ public class NoiseSettings : UpdatableScriptable
             globalNoiseScale = 1;
         }
     }
+    #endif
 }

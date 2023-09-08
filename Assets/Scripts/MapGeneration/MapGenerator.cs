@@ -22,10 +22,14 @@ public class MapGenerator : MonoBehaviour
     public TextureSettings textureSettings;
 
     public Material terrainMaterial;
+    [Range(0, MeshGenerator.NumSupportedChunkSizes - 1)]
+    public int chunkSizeIndex;
+    [Range(0, MeshGenerator.NumSupportedFlatShadedChunkSizes - 1)]
+    public int flatShadedChunkSizeIndex;
     
     
     [Header("Mesh")]
-    [Range(0, 6)]
+    [Range(0, MeshGenerator.NumSupportedLoDs - 1)]
     public int editorPreviewLOD;
 
     public bool autoUpdate;
@@ -36,6 +40,7 @@ public class MapGenerator : MonoBehaviour
 
     private void Awake()
     {
+        textureSettings.ApplyToMaterial(terrainMaterial);
         textureSettings.UpdateMeshHeights(terrainMaterial, terrainSettings.MinHeight, terrainSettings.MaxHeight);
     }
 
@@ -86,7 +91,9 @@ public class MapGenerator : MonoBehaviour
 
     public int MapChunkSize()
     {
-        return terrainSettings.useFlatShading ? 95 : 239;
+        return terrainSettings.useFlatShading ? 
+            MeshGenerator.SupportedFlatShadedChunkSizes[flatShadedChunkSizeIndex] - 1:
+            MeshGenerator.SupportedChunkSizes[chunkSizeIndex] - 1;
     }
 
     public void RequestMapData(Vector2 center, Action<MapData> callback)
