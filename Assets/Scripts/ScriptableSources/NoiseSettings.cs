@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Settings/NoiseSettings")]
-public class NoiseSettings : ScriptableObject
+public class NoiseSettings : UpdatableScriptable
 {
     public NoiseGenerator.NormalizeMode normalizeMode;
+    public float globalNoiseScale;
     public float noiseScale;
     public int octaves; 
     [Range(0f, 1f)]
@@ -14,8 +15,10 @@ public class NoiseSettings : ScriptableObject
     public int seed;
     public Vector2 offset;
 
-    public void OnValidate()
+    #if UNITY_EDITOR
+    public override void OnValidate()
     {
+        base.OnValidate();
         if (lacunarity < 1)
         {
             lacunarity = 1;
@@ -24,5 +27,10 @@ public class NoiseSettings : ScriptableObject
         {
             octaves = 1;
         }
+        if(globalNoiseScale == 0)
+        {
+            globalNoiseScale = 1;
+        }
     }
+    #endif
 }
