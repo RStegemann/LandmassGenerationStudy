@@ -3,9 +3,7 @@ Shader "Unlit/Terrain"
     Properties
     {
         [Header(Surface Options)]
-        [MainColor] _ColorTint("Tint", Color) = (1, 1, 1, 1)
-        [MainTexture] _ColorMap("Color", 2D) = "white" {}
-        _Smoothness("Smoothness", Float) = 0
+        _smoothness("Smoothness", Float) = 0
     }
     
     SubShader{
