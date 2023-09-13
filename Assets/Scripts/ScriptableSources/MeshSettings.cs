@@ -20,8 +20,9 @@ public class MeshSettings : UpdatableScriptable
     public bool useFlatShading;
 
     /* num verts per line of mesh rendered at LOD = 0. Includes the 2 extra verts that are excluded from final mesh, 
-     but used for calculating normals*/
-    public int NumVertsPerLine => SupportedChunkSizes[useFlatShading ? flatShadedChunkSizeIndex : chunkSizeIndex] + 1;
+     but used for calculating normals as well as 2 extra verts for high res borders to make chunks of all LODs connect
+     without gaps*/
+    public int NumVertsPerLine => SupportedChunkSizes[useFlatShading ? flatShadedChunkSizeIndex : chunkSizeIndex] + 5;
 
     public float MeshWorldSize => (NumVertsPerLine - 3) * meshScale;
 }
