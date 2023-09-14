@@ -2,14 +2,14 @@ using UnityEngine;
 
 public static class MeshGenerator
 {
-    public static MeshData GenerateTerrainMesh(float[,] heightMap, MeshSettings meshSettings, int levelOfDetail)
+    public static MeshData GenerateTerrainMesh(float[][] heightMap, MeshSettings meshSettings, int levelOfDetail)
     {
         int skipIncrement = levelOfDetail == 0 ? 1 : levelOfDetail * 2;
         int numVertsPerLine = meshSettings.NumVertsPerLine;
         Vector2 topLeft = new Vector2(-1, 1) * meshSettings.MeshWorldSize / 2f;
 
         MeshData mesh = new MeshData(numVertsPerLine, skipIncrement, meshSettings.useFlatShading);
-        int[,] vertexIndexMap = new int[numVertsPerLine, numVertsPerLine];
+        int[][] vertexIndexMap = JaggedArray.CreateJaggedArray<int[][]>(numVertsPerLine, numVertsPerLine);
         int meshVertexIndex = 0;
         int outOfMeshVertexIndex = -1;
         for (int y = 0; y < numVertsPerLine; y++)
@@ -23,12 +23,12 @@ public static class MeshGenerator
                                         (y - 2) % skipIncrement != 0);
                 if(isOutOfMeshVertex)
                 {
-                    vertexIndexMap[x, y] = outOfMeshVertexIndex;
+                    vertexIndexMap[x][y] = outOfMeshVertexIndex;
                     outOfMeshVertexIndex--;
                 }
                 else if(!isSkippedVertex)
                 {
-                    vertexIndexMap[x, y] = meshVertexIndex;
+                    vertexIndexMap[x][y] = meshVertexIndex;
                     meshVertexIndex++;
                 }
             }
@@ -53,10 +53,10 @@ public static class MeshGenerator
                         (y == 2 || y == numVertsPerLine - 3 || x == 2 || x == numVertsPerLine - 3) && 
                         !isMainVertex && !isMeshEdgeVertex && !isOutOfMeshVertex;
                     
-                    int vertexIndex = vertexIndexMap[x, y];
+                    int vertexIndex = vertexIndexMap[x][y];
                     Vector2 percent = new Vector2(x - 1, y - 1) / (numVertsPerLine - 3);
                     Vector2 vertexPos2D = topLeft + new Vector2(percent.x, -percent.y) * meshSettings.MeshWorldSize;
-                    float height = heightMap[x, y];
+                    float height = heightMap[x][y];
 
                     if (isEdgeConnectionVertex)
                     {
@@ -65,8 +65,8 @@ public static class MeshGenerator
                         int dstToMainVertexB = skipIncrement - dstToMainVertexA;
                         float dstPercentFromAToB = dstToMainVertexA / (float)skipIncrement;
                         
-                        float heightMainVertexA = heightMap[isVertical ? x : x - dstToMainVertexA, isVertical ? y - dstToMainVertexA : y];
-                        float heightMainVertexB = heightMap[isVertical ? x : x + dstToMainVertexB, isVertical ? y + dstToMainVertexB : y];
+                        float heightMainVertexA = heightMap[isVertical ? x : x - dstToMainVertexA][isVertical ? y - dstToMainVertexA : y];
+                        float heightMainVertexB = heightMap[isVertical ? x : x + dstToMainVertexB][isVertical ? y + dstToMainVertexB : y];
 
                         height = heightMainVertexA * (1 - dstPercentFromAToB) + heightMainVertexB * dstPercentFromAToB;
                     }
@@ -82,10 +82,10 @@ public static class MeshGenerator
                         int currentIncrement = (isMainVertex && x != numVertsPerLine - 3 && y != numVertsPerLine - 3)
                             ? skipIncrement
                             : 1;
-                        int a = vertexIndexMap[x, y];
-                        int b = vertexIndexMap[x + currentIncrement, y];
-                        int c = vertexIndexMap[x, y + currentIncrement];
-                        int d = vertexIndexMap[x + currentIncrement, y + currentIncrement];
+                        int a = vertexIndexMap[x][y];
+                        int b = vertexIndexMap[x + currentIncrement][y];
+                        int c = vertexIndexMap[x][y + currentIncrement];
+                        int d = vertexIndexMap[x + currentIncrement][y + currentIncrement];
                         mesh.AddTriangle(a, d, c);
                         mesh.AddTriangle(d, a, b);
                     }

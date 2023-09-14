@@ -13,15 +13,7 @@ MonoBehaviour:
   m_Name: DefaultHeightMapSettings
   m_EditorClassIdentifier: 
   autoUpdate: 1
-  noiseSettings:
-    normalizeMode: 1
-    globalNoiseScale: 1.1
-    scale: 120
-    octaves: 6
-    persistance: 0.6
-    lacunarity: 2
-    seed: 0
-    offset: {x: 0, y: 0}
+  noiseSettings: {fileID: 11400000, guid: 4b8d89aab39ba9a4daf3119be7cba78d, type: 2}
   useFalloff: 1
   falloffCurve:
     serializedVersion: 2

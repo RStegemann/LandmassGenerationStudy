@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 [CreateAssetMenu(menuName = "Settings/NoiseSettings")]
 public class HeightMapSettings : UpdatableScriptable
 {
-    public NoiseSettings noiseSettings;
+    [Expandable]
+    public NoiseLayerSettings noiseSettings;
     [Header("Falloff")]
     public bool useFalloff;
     public AnimationCurve falloffCurve;
@@ -16,11 +19,13 @@ public class HeightMapSettings : UpdatableScriptable
     public float MinHeight => heightMultiplier * heightCurve.Evaluate(0);
     public float MaxHeight => heightMultiplier * heightCurve.Evaluate(1);
 
-    #if UNITY_EDITOR
     public override void OnValidate()
     {
-        noiseSettings.ValidateValues();
+        if (noiseSettings != null)
+        {
+            noiseSettings.OnValuesUpdated -= NotifyOfUpdate;
+            noiseSettings.OnValuesUpdated += NotifyOfUpdate;
+        }
         base.OnValidate();
     }
-    #endif
 }

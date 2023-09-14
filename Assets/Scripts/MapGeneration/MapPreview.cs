@@ -6,7 +6,6 @@ public class MapPreview : MonoBehaviour
 {
     public Renderer textureRenderer;
     public MeshFilter meshFilter;
-    public MeshRenderer meshRenderer;
     
     public enum DrawMode
     {

@@ -30,7 +30,7 @@ public static class TextureGenerator
                     Color.Lerp(
                         Color.black, 
                         Color.white, 
-                        Mathf.InverseLerp(heightMap.minValue, heightMap.maxValue, heightMap.values[x, y]));
+                        Mathf.InverseLerp(heightMap.minValue, heightMap.maxValue, heightMap.values[x][y]));
             }
         }
 
