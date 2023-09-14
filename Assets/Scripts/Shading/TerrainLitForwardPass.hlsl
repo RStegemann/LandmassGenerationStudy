@@ -79,8 +79,8 @@ float4 fragment(Interpolators input) : SV_TARGET{
     SurfaceData surfaceInput = (SurfaceData)0;
     surfaceInput.albedo = col.rgb;
     surfaceInput.alpha = 1;
-    surfaceInput.specular = 1;
-    surfaceInput.smoothness = _smoothness;
+    surfaceInput.specular = 0;
+    surfaceInput.smoothness = 1 - _smoothness;
     
     return UniversalFragmentBlinnPhong(lightingInput, surfaceInput);
 }
