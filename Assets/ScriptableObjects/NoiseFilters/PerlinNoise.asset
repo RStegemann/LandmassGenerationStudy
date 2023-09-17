@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: PerlinNoise
   m_EditorClassIdentifier: 
   autoUpdate: 1
-  scale: 55.67
-  octaves: 4
-  persistence: 0.415
-  lacunarity: 3.09
-  seed: 65
+  scale: 79.3
+  octaves: 3
+  persistence: 0.181
+  lacunarity: 4.04
+  seed: 41
+  maxHeightScale: 0.28
   offset: {x: 0, y: 0}

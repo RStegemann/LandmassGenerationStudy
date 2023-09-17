@@ -9,6 +9,7 @@ public class PerlinNoise : NoiseFilter
     public float persistence = 0.6f;
     public float lacunarity = 2;
     public int seed;
+    public float maxHeightScale;
     public Vector2 offset;
 
     public override void OnValidate()
@@ -48,9 +49,7 @@ public class PerlinNoise : NoiseFilter
             float offsetX = prng.Next(-100_000, 100_000) + offset.x + sampleCenter.x;
             float offsetY = prng.Next(-100_000, 100_000) - offset.y - sampleCenter.y;
             octaveOffsets[i] = new Vector2(offsetX, offsetY);
-            amplitude *= persistence;
         }
-        amplitude = 1;
         
         for(int i = 0; i < octaves; i++)
         {

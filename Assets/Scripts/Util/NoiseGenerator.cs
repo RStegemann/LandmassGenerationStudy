@@ -10,37 +10,30 @@ public static class NoiseGenerator
         float[][] values = JaggedArray.CreateJaggedArray<float[][]>(mapWidth, mapHeight);
         if (settings.noiseLayers.Length > 0)
         {
-            float maxPossibleHeight = 0;
-            for(int i = 0; i < settings.noiseLayers.Length; i++)
-            {
-                if (settings.noiseLayers[i].enabled)
-                {
-                    maxPossibleHeight += settings.noiseLayers[i].noise.MaxValue();
-                }
-            }
-        
-            for (int index = 0; index < mapWidth; index++)
-            {
-                values[index] = new float[mapHeight];
-            }
-
             for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapHeight; y++)
                 {
-                    float firstLayerElevation = settings.noiseLayers[0].noise.Evaluate(x, y, sampleCenter);
-                    float elevation = firstLayerElevation;
+                    float calculatedLayers = 0;
+                    float elevation = 0;
+                    if (settings.noiseLayers[0].enabled)
+                    {
+                        float firstLayerElevation = settings.noiseLayers[0].noise.Evaluate(x, y, sampleCenter);
+                        elevation = firstLayerElevation;
+                        calculatedLayers++;
+                    }
+                    
                     for (int i = 1; i < settings.noiseLayers.Length; i++)
                     {
                         if (settings.noiseLayers[i].enabled)
                         {
                             elevation += settings.noiseLayers[i].noise.Evaluate(x, y, sampleCenter);
+                            calculatedLayers++;
                         }
                     }
+
+                    elevation /= calculatedLayers;
                     values[x][y] = elevation;  
-                    // normalize elevation
-                    elevation = (values[x][y] + 1) / (maxPossibleHeight/settings.globalNoiseHeightScale);
-                    values[x][y] = Mathf.Clamp(elevation, 0, int.MaxValue);
                 }
             }
         }
