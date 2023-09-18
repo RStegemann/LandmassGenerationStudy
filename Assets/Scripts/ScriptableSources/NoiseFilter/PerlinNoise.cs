@@ -38,7 +38,8 @@ public class PerlinNoise : NoiseFilter
     public override float Evaluate(float x, float y, Vector2 sampleCenter)
     {
         System.Random prng = new System.Random(seed);
-        
+
+        float maxPossibleValue = 0;
         float amplitude = 1;
         float frequency = 1;
         float elevation = 0;
@@ -57,10 +58,13 @@ public class PerlinNoise : NoiseFilter
             float sampleY = (y + octaveOffsets[i].y) / scale * frequency;
             float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
             elevation += perlinValue * amplitude;
-
+            maxPossibleValue += 1 * amplitude;
             amplitude *= persistence;
             frequency *= lacunarity;
         }
+
+        elevation = elevation / maxPossibleValue / maxHeightScale;
+        
         return elevation;
     }
     

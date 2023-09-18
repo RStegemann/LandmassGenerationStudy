@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Settings/NoiseLayerSettings")]
 public class NoiseLayerSettings : UpdatableScriptable
 {
-    public bool useFirstLayerAsMask;
     public float globalNoiseHeightScale;
     public NoiseLayer[] noiseLayers;
 
@@ -30,6 +29,9 @@ public class NoiseLayer
     {
         Perlin
     }
+    public bool useFirstLayerAsMask;
+    [Range(0, 1)]
+    public float strength;
     public bool enabled;
     public NoiseFilter noise;
 }

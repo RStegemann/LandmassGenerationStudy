@@ -14,26 +14,24 @@ public static class NoiseGenerator
             {
                 for (int y = 0; y < mapHeight; y++)
                 {
-                    float calculatedLayers = 0;
                     float elevation = 0;
+                    float firstLayerElevation = settings.noiseLayers[0].noise.Evaluate(x, y, sampleCenter);
                     if (settings.noiseLayers[0].enabled)
                     {
-                        float firstLayerElevation = settings.noiseLayers[0].noise.Evaluate(x, y, sampleCenter);
-                        elevation = firstLayerElevation;
-                        calculatedLayers++;
+                        elevation = firstLayerElevation * settings.noiseLayers[0].strength;
                     }
                     
                     for (int i = 1; i < settings.noiseLayers.Length; i++)
                     {
-                        if (settings.noiseLayers[i].enabled)
+                        NoiseLayer layer = settings.noiseLayers[i];
+                        if (layer.enabled)
                         {
-                            elevation += settings.noiseLayers[i].noise.Evaluate(x, y, sampleCenter);
-                            calculatedLayers++;
+                            float mask = layer.useFirstLayerAsMask ? firstLayerElevation : 1;
+                            float v = settings.noiseLayers[i].noise.Evaluate(x, y, sampleCenter) * mask;
+                            elevation += v * settings.noiseLayers[i].strength;
                         }
                     }
-
-                    elevation /= calculatedLayers;
-                    values[x][y] = elevation;  
+                    values[x][y] = elevation / settings.noiseLayers.Length / settings.globalNoiseHeightScale;  
                 }
             }
         }
