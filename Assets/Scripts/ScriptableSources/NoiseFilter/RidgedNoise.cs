@@ -14,9 +14,6 @@ public class RidgedNoise : NoiseFilter
     public float maxHeightScale;
     public float baseRoughness = 0;
     public float roughness;
-    public int seed = 15;
-
-    private SimplexNoise noise = new SimplexNoise();
 
     public override void OnValidate()
     {
@@ -43,32 +40,22 @@ public class RidgedNoise : NoiseFilter
 
     public override float Evaluate(float x, float y, Vector2 sampleCenter)
     {
-        System.Random prng = new System.Random(seed);
-        Vector2[] octaveOffsets = new Vector2[octaves];
-        for(int i = 0; i < octaves; i++)
-        {
-            float offsetX = prng.Next(-100_000, 100_000) + sampleCenter.x;
-            float offsetY = prng.Next(-100_000, 100_000) - sampleCenter.y;
-            octaveOffsets[i] = new Vector2(offsetX, offsetY);
-        }
-        
+        float maxPossibleValue = 0;
         float amplitude = 1;
         float elevation = 0;
         float frequency = baseRoughness;
-        float weight = 1;
         for (int i = 0; i < octaves; i++)
         {
-            //float sampleX = (x + octaveOffsets[i].x) / scale * frequency;
-            //float sampleY = (y + octaveOffsets[i].y) / scale * frequency;
-            //float v = 1 - Mathf.PerlinNoise(sampleX, sampleY);
-            float v = 1 - Mathf.Abs(noise.Evaluate(new Vector3(x, y, 0) / scale * frequency));
-            v *= v;
-            v *= weight;
-            weight = v;
+            float2 sample = new float2((x + sampleCenter.x) * frequency, (y - sampleCenter.y) * frequency);
+            float v = 1 - Mathf.Abs(noise.snoise(sample));
             elevation += v * amplitude;
+            maxPossibleValue += 1 * amplitude;
             frequency *= roughness;
-            amplitude *= persistence;
+            amplitude *= persistence * elevation;
         }
+
+        elevation = elevation / maxPossibleValue / maxHeightScale;
+        
         return elevation;
     }
     

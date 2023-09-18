@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoUpdate: 1
   noiseSettings: {fileID: 11400000, guid: 4b8d89aab39ba9a4daf3119be7cba78d, type: 2}
-  useFalloff: 1
+  useFalloff: 0
   falloffCurve:
     serializedVersion: 2
     m_Curve:
@@ -62,31 +62,31 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.41559842
-      value: 0.30726033
-      inSlope: 0.19854775
-      outSlope: 0.19854775
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.20453474
-      outWeight: 0.2710364
-    - serializedVersion: 3
-      time: 0.6292439
-      value: 0.4208571
-      inSlope: 0.27484348
-      outSlope: 0.27484348
+      time: 0.34940907
+      value: 0.17944258
+      inSlope: 0.087077565
+      outSlope: 0.087077565
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.23136629
+      outWeight: 0.1472265
+    - serializedVersion: 3
+      time: 0.79014665
+      value: 0.5112852
+      inSlope: 0.050328325
+      outSlope: 0.050328325
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.27612638
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.07986579
-      outSlope: 0.07986579
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.30353045
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

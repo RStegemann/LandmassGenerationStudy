@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: RidgedNoise
   m_EditorClassIdentifier: 
   autoUpdate: 1
-  scale: 240.59
-  octaves: 3
-  persistence: 0.183
-  maxHeightScale: 1
-  baseRoughness: 1
-  roughness: 8.82
-  seed: 15
+  scale: 200
+  octaves: 2
+  persistence: 0.285
+  maxHeightScale: 0.17
+  baseRoughness: 0.005
+  roughness: 4.96

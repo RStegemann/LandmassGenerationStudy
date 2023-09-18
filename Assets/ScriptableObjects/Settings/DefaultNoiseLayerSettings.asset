@@ -13,8 +13,13 @@ MonoBehaviour:
   m_Name: DefaultNoiseLayerSettings
   m_EditorClassIdentifier: 
   autoUpdate: 1
-  useFirstLayerAsMask: 0
-  globalNoiseHeightScale: 0.8
+  globalNoiseHeightScale: 10.24
   noiseLayers:
-  - enabled: 1
+  - useFirstLayerAsMask: 0
+    strength: 1
+    enabled: 1
     noise: {fileID: 11400000, guid: f4bc189f1e1172b48a27d1592b07e4f9, type: 2}
+  - useFirstLayerAsMask: 1
+    strength: 1
+    enabled: 1
+    noise: {fileID: 11400000, guid: 62f99f68aa9651243b2ecf1e66558438, type: 2}
